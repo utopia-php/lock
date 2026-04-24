@@ -42,7 +42,7 @@ interface Lock
 
 ```php
 use Swoole\Coroutine;
-use Utopia\Lock\Lock\Mutex;
+use Utopia\Lock\Mutex;
 use function Swoole\Coroutine\run;
 
 $mutex = new Mutex();
@@ -62,7 +62,7 @@ run(function () use ($mutex): void {
 ## Semaphore
 
 ```php
-use Utopia\Lock\Lock\Semaphore;
+use Utopia\Lock\Semaphore;
 
 $semaphore = new Semaphore(permits: 3);
 
@@ -74,7 +74,7 @@ $semaphore->withLock(function () {
 ## File
 
 ```php
-use Utopia\Lock\Lock\File;
+use Utopia\Lock\File;
 
 $lock = new File('/var/run/my-daily-job.lock');
 
@@ -100,7 +100,7 @@ $readers->withLock(fn () => readCache(), timeout: 1.0);
 
 ```php
 use Redis;
-use Utopia\Lock\Lock\Distributed;
+use Utopia\Lock\Distributed;
 
 $redis = new Redis();
 $redis->connect('redis.internal', 6379);

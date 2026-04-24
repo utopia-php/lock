@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Utopia\Tests\Lock;
+namespace Utopia\Lock\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Redis;
+use Utopia\Lock\Distributed;
 use Utopia\Lock\Exception\Contention;
-use Utopia\Lock\Lock\Distributed;
 
 final class DistributedTest extends TestCase
 {

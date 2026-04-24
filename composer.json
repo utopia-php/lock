@@ -30,7 +30,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Utopia\\Tests\\": "tests/"
+            "Utopia\\Lock\\Tests\\": "tests/"
         }
     },
     "scripts": {

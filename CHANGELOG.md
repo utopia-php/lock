@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.2.0 — 2026-04-24
+
+### Changed
+
+- **Breaking**: lock classes moved from `Utopia\Lock\Lock\*` to `Utopia\Lock\*`.
+  Users on 0.1.0 must update imports:
+    - `Utopia\Lock\Lock\Mutex`       → `Utopia\Lock\Mutex`
+    - `Utopia\Lock\Lock\Semaphore`   → `Utopia\Lock\Semaphore`
+    - `Utopia\Lock\Lock\File`        → `Utopia\Lock\File`
+    - `Utopia\Lock\Lock\Distributed` → `Utopia\Lock\Distributed`
+
+  The `Utopia\Lock\Lock` interface and `Utopia\Lock\Exception` hierarchy are unchanged.
+
 ## 0.1.0
 
 Initial release.

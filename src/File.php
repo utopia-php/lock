@@ -2,12 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Utopia\Lock\Lock;
+namespace Utopia\Lock;
 
 use RuntimeException;
-use Utopia\Lock\Exception;
 use Utopia\Lock\Exception\Contention;
-use Utopia\Lock\Lock;
 
 final class File implements Lock
 {

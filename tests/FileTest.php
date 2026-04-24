@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Utopia\Tests\Lock;
+namespace Utopia\Lock\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Utopia\Lock\Exception\Contention;
-use Utopia\Lock\Lock\File;
+use Utopia\Lock\File;
 
 final class FileTest extends TestCase
 {

@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Utopia\Tests;
+namespace Utopia\Lock\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Utopia\Lock\Exception;
 use Utopia\Lock\Exception\Contention;
+use Utopia\Lock\File;
 use Utopia\Lock\Lock;
-use Utopia\Lock\Lock\File;
-use Utopia\Lock\Lock\Mutex;
-use Utopia\Lock\Lock\Semaphore;
+use Utopia\Lock\Mutex;
+use Utopia\Lock\Semaphore;
 
 final class LockTest extends TestCase
 {

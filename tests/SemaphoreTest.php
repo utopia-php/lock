@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Utopia\Tests\Lock;
+namespace Utopia\Lock\Tests;
 
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Swoole\Coroutine;
 use Swoole\Coroutine\System;
-use Utopia\Lock\Lock\Semaphore;
+use Utopia\Lock\Semaphore;
 
 use function Swoole\Coroutine\run;
 
