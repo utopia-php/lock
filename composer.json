@@ -1,6 +1,6 @@
 {
     "name": "utopia-php/lock",
-    "description": "Mutex, semaphore, file and distributed locks for PHP — one interface, four backends.",
+    "description": "A simple lock library to coordinate access to shared resources across coroutines, processes and hosts",
     "type": "library",
     "license": "MIT",
     "authors": [

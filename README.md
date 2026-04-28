@@ -1,28 +1,46 @@
 # Utopia Lock
 
 [![Build Status](https://github.com/utopia-php/lock/actions/workflows/tests.yml/badge.svg)](https://github.com/utopia-php/lock/actions/workflows/tests.yml)
-[![License](https://img.shields.io/github/license/utopia-php/lock.svg)](https://github.com/utopia-php/lock/blob/main/LICENSE)
+![Total Downloads](https://img.shields.io/packagist/dt/utopia-php/lock.svg)
+[![Discord](https://img.shields.io/discord/564160730845151244?label=discord)](https://appwrite.io/discord)
 
-Four lock primitives behind a single interface, for PHP 8.3+ on Swoole 6.
+Utopia Lock library is a simple and lite library for coordinating access to shared resources in PHP applications. This library provides a single interface backed by four lock primitives — mutex, semaphore, file and distributed — for serialising work across coroutines, processes, hosts and clusters. This library is maintained by the [Appwrite team](https://appwrite.io).
 
-## Installation
+Although this library is part of the [Utopia Framework](https://github.com/utopia-php/framework) project it is dependency free and can be used as standalone with any other PHP project or framework.
 
+## Getting Started
+
+Install using composer:
 ```bash
 composer require utopia-php/lock
 ```
 
-## When to use which
+## System Requirements
 
-| Primitive     | Scope                                 | Backing                              | Use when                                                    |
-| ------------- | ------------------------------------- | ------------------------------------ | ----------------------------------------------------------- |
-| `Mutex`       | Single worker, coroutine-scoped       | `Swoole\Coroutine\Channel(1)`        | Serialising access to an in-memory resource per worker      |
-| `Semaphore`   | Single worker, coroutine-scoped       | `Swoole\Coroutine\Channel($permits)` | Capping concurrent access (e.g. outbound request pool)      |
-| `File`        | Single host, cross-process            | `flock()`                            | Cron guards, shared-filesystem coordination                 |
-| `Distributed` | Cross-host, cluster-wide              | Redis `SET NX EX` + Lua release      | Coordinating workers across machines                        |
+Utopia Lock requires PHP 8.3 or later. We recommend using the latest PHP version whenever possible.
 
-## The interface
+The `Mutex` and `Semaphore` primitives require the [Swoole](https://github.com/swoole/swoole-src) extension (>=6.0). The `Distributed` primitive requires the [Redis](https://github.com/phpredis/phpredis) extension.
+
+## Features
+
+### Supported Primitives
+
+| Primitive     | Scope                           | Backing                              | Use when                                                |
+| ------------- | ------------------------------- | ------------------------------------ | ------------------------------------------------------- |
+| `Mutex`       | Single worker, coroutine-scoped | `Swoole\Coroutine\Channel(1)`        | Serialising access to an in-memory resource per worker  |
+| `Semaphore`   | Single worker, coroutine-scoped | `Swoole\Coroutine\Channel($permits)` | Capping concurrent access (e.g. outbound request pool)  |
+| `File`        | Single host, cross-process      | `flock()`                            | Cron guards, shared-filesystem coordination             |
+| `Distributed` | Cross-host, cluster-wide        | Redis `SET NX EX` + Lua release      | Coordinating workers across machines                    |
+
+## Usage
+
+### The Interface
+
+All primitives implement the same `Utopia\Lock\Lock` interface:
 
 ```php
+<?php
+
 namespace Utopia\Lock;
 
 interface Lock
@@ -38,9 +56,13 @@ interface Lock
 
 `withLock()` throws `Utopia\Lock\Exception\Contention` if the lock cannot be acquired before the timeout expires.
 
-## Mutex
+### Mutex
 
 ```php
+<?php
+
+require_once __DIR__ . '/vendor/autoload.php';
+
 use Swoole\Coroutine;
 use Utopia\Lock\Mutex;
 use function Swoole\Coroutine\run;
@@ -59,9 +81,11 @@ run(function () use ($mutex): void {
 });
 ```
 
-## Semaphore
+### Semaphore
 
 ```php
+<?php
+
 use Utopia\Lock\Semaphore;
 
 $semaphore = new Semaphore(permits: 3);
@@ -71,9 +95,11 @@ $semaphore->withLock(function () {
 });
 ```
 
-## File
+### File
 
 ```php
+<?php
+
 use Utopia\Lock\File;
 
 $lock = new File('/var/run/my-daily-job.lock');
@@ -96,9 +122,11 @@ $readers = new File('/tmp/cache.lock', LOCK_SH);
 $readers->withLock(fn () => readCache(), timeout: 1.0);
 ```
 
-## Distributed
+### Distributed
 
 ```php
+<?php
+
 use Redis;
 use Utopia\Lock\Distributed;
 
@@ -116,9 +144,11 @@ $lock->withLock(function () {
 
 Release is atomic: a Lua script verifies the lock value still matches this instance's token before deleting, so a lock that expires and is re-acquired elsewhere is never released by accident.
 
-## Exception handling
+### Exception Handling
 
 ```php
+<?php
+
 use Utopia\Lock\Exception;
 use Utopia\Lock\Exception\Contention as ContentionException;
 
@@ -131,16 +161,30 @@ try {
 }
 ```
 
-## Development
+## Tests
+
+To run all unit tests, use the following Docker command:
 
 ```bash
-docker compose up -d
-docker compose exec tests composer install
-docker compose exec tests composer format:check
-docker compose exec tests composer analyze
-docker compose exec tests vendor/bin/phpunit
+docker compose exec tests vendor/bin/phpunit --configuration phpunit.xml tests
 ```
 
-## License
+To run static code analysis, use the following PHPStan command:
 
-MIT
+```bash
+docker compose exec tests vendor/bin/phpstan analyse --memory-limit=512M
+```
+
+## Security
+
+We take security seriously. If you discover any security-related issues, please email security@appwrite.io instead of using the issue tracker.
+
+## Contributing
+
+All code contributions - including those of people having commit access - must go through a pull request and be approved by a core developer before being merged. This is to ensure a proper review of all the code.
+
+We truly ❤️ pull requests! If you wish to help, you can learn more about how you can contribute to this project in the [contribution guide](CONTRIBUTING.md).
+
+## Copyright and license
+
+The MIT License (MIT) [http://www.opensource.org/licenses/mit-license.php](http://www.opensource.org/licenses/mit-license.php)
