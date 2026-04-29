@@ -6,6 +6,7 @@ namespace Utopia\Lock;
 
 use Closure;
 use Redis;
+use RedisCluster;
 use Utopia\Lock\Exception\Contention;
 
 final class Distributed implements Lock
@@ -31,7 +32,7 @@ final class Distributed implements Lock
     private ?Closure $logger = null;
 
     public function __construct(
-        private readonly Redis $redis,
+        private readonly Redis|RedisCluster $redis,
         private readonly string $key,
         private readonly int $ttl = 600,
     ) {
