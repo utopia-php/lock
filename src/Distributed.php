@@ -140,19 +140,25 @@ final class Distributed implements Lock
     }
 
     /**
-     * The value this lock wrote to the key, or null when it holds no lease.
+     * The value the last successful acquisition wrote to the key, or null before
+     * one and after {@see release()}.
      *
-     * A caller that records what it did while holding the lease can store this
-     * alongside the record and refuse a later write whose token no longer matches,
-     * which is the only way to make the write itself conditional on the lease:
-     * {@see refresh()} proves ownership at the instant it returns, not at the
-     * instant the write commits.
+     * This is what the lock believes it wrote, not proof that the key still holds
+     * it: an expired TTL and a failed {@see refresh()} both leave the value here
+     * untouched. {@see isHeld()} and {@see refresh()} are what answer whether the
+     * lease is live.
      *
-     * It is also the value an operator reads back from the key, so a record and
-     * the live holder can be compared directly.
+     * Being unchanged by the loss is what makes it useful. A caller that records
+     * what it did while holding the lease can store this token with the record and
+     * refuse a later write whose stored token no longer matches, which is the only
+     * way to make the write itself conditional on the lease: a refresh proves
+     * ownership at the instant it returns, not at the instant the write commits.
      *
-     * A new value is generated on every acquisition, so a lease that lapsed and
-     * was retaken by this same instance does not compare equal to the one before.
+     * A new value is generated on every acquisition, so work recorded under a lapsed
+     * lease does not compare equal to work recorded under the lease that replaced it.
+     *
+     * It is also the literal value on the key, so an operator can read the key back
+     * and compare it against a record directly.
      */
     public function token(): ?string
     {

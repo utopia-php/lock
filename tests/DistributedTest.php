@@ -157,6 +157,30 @@ final class DistributedTest extends TestCase
         );
     }
 
+    public function testTokenSurvivesTheLossOfTheLease(): void
+    {
+        $lock = new Distributed($this->redis, $this->key, 30);
+        $this->assertTrue($lock->tryAcquire());
+        $token = $lock->token();
+
+        // The lease lapses and a successor takes the key, exactly as an expired TTL
+        // would leave it.
+        $this->redis->del($this->key);
+        $successor = new Distributed($this->redis, $this->key, 30);
+        $this->assertTrue($successor->tryAcquire());
+
+        $this->assertFalse($lock->isHeld(), 'the lease is gone, and isHeld is what says so');
+        $this->assertFalse($lock->refresh(), 'a lapsed lease cannot be extended');
+        $this->assertSame(
+            $token,
+            $lock->token(),
+            'the token names the acquisition that did the work, so it must not change when that lease is lost: a record written under it has to stay distinguishable from the successor'
+        );
+        $this->assertNotSame($lock->token(), $successor->token());
+
+        $successor->release();
+    }
+
     public function testTokenIsNotIssuedForAFailedAcquire(): void
     {
         $holder = new Distributed($this->redis, $this->key, 30);
