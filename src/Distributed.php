@@ -140,6 +140,26 @@ final class Distributed implements Lock
     }
 
     /**
+     * The value this lock wrote to the key, or null when it holds no lease.
+     *
+     * A caller that records what it did while holding the lease can store this
+     * alongside the record and refuse a later write whose token no longer matches,
+     * which is the only way to make the write itself conditional on the lease:
+     * {@see refresh()} proves ownership at the instant it returns, not at the
+     * instant the write commits.
+     *
+     * It is also the value an operator reads back from the key, so a record and
+     * the live holder can be compared directly.
+     *
+     * A new value is generated on every acquisition, so a lease that lapsed and
+     * was retaken by this same instance does not compare equal to the one before.
+     */
+    public function token(): ?string
+    {
+        return $this->token;
+    }
+
+    /**
      * @param  array<int, string>  $arguments
      */
     private function runScript(string $script, array $arguments): mixed

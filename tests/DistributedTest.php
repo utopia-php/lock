@@ -121,6 +121,57 @@ final class DistributedTest extends TestCase
         $lock->release();
     }
 
+    public function testTokenIsTheValueOnTheKeyAndIsClearedOnRelease(): void
+    {
+        $lock = new Distributed($this->redis, $this->key, 30);
+
+        $this->assertTrue($lock->tryAcquire());
+        $token = $lock->token();
+
+        $this->assertSame(
+            $this->redis->get($this->key),
+            $token,
+            'the token must be the value on the key, so a record naming it can be compared against the live holder'
+        );
+
+        $lock->release();
+        $this->assertNull($lock->token());
+    }
+
+    public function testEachAcquisitionMintsItsOwnToken(): void
+    {
+        $lock = new Distributed($this->redis, $this->key, 30);
+
+        $this->assertTrue($lock->tryAcquire());
+        $first = $lock->token();
+        $lock->release();
+
+        $this->assertTrue($lock->tryAcquire());
+        $second = $lock->token();
+        $lock->release();
+
+        $this->assertNotSame(
+            $first,
+            $second,
+            'a token identifies one acquisition, so work recorded under a lapsed lease cannot pass for work under its successor'
+        );
+    }
+
+    public function testTokenIsNotIssuedForAFailedAcquire(): void
+    {
+        $holder = new Distributed($this->redis, $this->key, 30);
+        $waiter = new Distributed($this->redis, $this->key, 30);
+
+        $this->assertNull($waiter->token(), 'a lock holding no lease has no token to hand out');
+        $this->assertTrue($holder->tryAcquire());
+        $this->assertFalse($waiter->tryAcquire());
+
+        $this->assertNull($waiter->token(), 'a lock that never took the key must not name itself the holder');
+        $this->assertSame($holder->token(), $this->redis->get($this->key));
+
+        $holder->release();
+    }
+
     public function testLoggerReceivesMessages(): void
     {
         $holder = new Distributed($this->redis, $this->key, 30);
