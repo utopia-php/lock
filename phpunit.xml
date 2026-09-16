@@ -9,10 +9,10 @@
     <testsuites>
         <testsuite name="unit">
             <directory>tests</directory>
-            <exclude>tests/DistributedTest.php</exclude>
+            <exclude>tests/E2E</exclude>
         </testsuite>
         <testsuite name="e2e">
-            <file>tests/DistributedTest.php</file>
+            <directory>tests/E2E</directory>
         </testsuite>
     </testsuites>
     <source>

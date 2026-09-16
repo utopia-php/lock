@@ -1,7 +1,7 @@
 # Utopia Lock
 
 > [!IMPORTANT]
-> This repository is a read-only mirror of the [utopia-php monorepo](https://github.com/utopia-php/monorepo). Development happens in [`packages/lock`](https://github.com/utopia-php/monorepo/tree/main/packages/lock) — please open issues and pull requests there.
+> This repository is a read-only mirror of [`packages/lock`](https://github.com/appwrite/appwrite/tree/main/packages/lock) in [appwrite/appwrite](https://github.com/appwrite/appwrite). Development happens there — please open issues and pull requests against appwrite/appwrite.
 
 [![Build Status](https://github.com/utopia-php/lock/actions/workflows/tests.yml/badge.svg)](https://github.com/utopia-php/lock/actions/workflows/tests.yml)
 ![Total Downloads](https://img.shields.io/packagist/dt/utopia-php/lock.svg)
@@ -182,17 +182,7 @@ try {
 
 ## Tests
 
-To run all unit tests, use the following Docker command:
-
-```bash
-docker compose exec tests vendor/bin/phpunit --configuration phpunit.xml tests
-```
-
-To run static code analysis, use the following PHPStan command:
-
-```bash
-docker compose exec tests vendor/bin/phpstan analyse --memory-limit=512M
-```
+This package is developed in [appwrite/appwrite](https://github.com/appwrite/appwrite); from that repository run `bin/monorepo test lock` (unit tier, then the Redis-backed tier against `docker-compose.yml`) and `bin/monorepo check lock`.
 
 ## Security
 
